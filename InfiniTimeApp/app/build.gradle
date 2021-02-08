@@ -8,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.infinitimeapp"
-        minSdkVersion 25
-        targetSdkVersion 25
+        minSdkVersion 26
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
