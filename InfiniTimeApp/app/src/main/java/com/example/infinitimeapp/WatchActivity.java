@@ -7,8 +7,11 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.telecom.TelecomManager;
 import android.util.Log;
@@ -32,11 +35,13 @@ import com.example.infinitimeapp.services.MusicService;
 import com.example.infinitimeapp.utils.SpotifyConnection;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import static android.Manifest.permission.ANSWER_PHONE_CALLS;
+import static android.Manifest.permission.MODIFY_AUDIO_SETTINGS;
 import static android.Manifest.permission.READ_CALL_LOG;
 import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_PHONE_NUMBERS;
@@ -45,9 +50,9 @@ import static com.example.infinitimeapp.common.Constants.DELAY;
 import static com.example.infinitimeapp.common.Constants.TAG;
 
 public class WatchActivity extends AppCompatActivity implements NotificationService.NotificationListener,
-                                                                SpotifyBroadcastReceiver.ReceiverListener,
-                                                                UpdateUiListener.StatusChangedListener,
-                                                                IncomingCallReceiver.CallReceiverListener {
+        SpotifyBroadcastReceiver.ReceiverListener,
+        UpdateUiListener.StatusChangedListener,
+        IncomingCallReceiver.CallReceiverListener {
     TextView mViewTextManufacturer;
     TextView mViewTextModel;
     TextView mViewTextSerial;
@@ -79,9 +84,11 @@ public class WatchActivity extends AppCompatActivity implements NotificationServ
     public static String MAC_Address = "";
 
     public static TelecomManager sTelecomManager;
+    public static AudioManager sAudioManager;
 
     private boolean mAutoConnect;
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +108,7 @@ public class WatchActivity extends AppCompatActivity implements NotificationServ
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         checkNotificationPermissions();
-        ActivityCompat.requestPermissions(this, new String[]{ANSWER_PHONE_CALLS, READ_CALL_LOG, READ_PHONE_NUMBERS, READ_CONTACTS, READ_PHONE_STATE}, 0);
+        ActivityCompat.requestPermissions(this, new String[]{ANSWER_PHONE_CALLS, READ_CALL_LOG, READ_PHONE_NUMBERS, READ_CONTACTS, READ_PHONE_STATE, MODIFY_AUDIO_SETTINGS}, 0);
 
         new NotificationService().setListener(this);
         new SpotifyBroadcastReceiver().setListener(this);
@@ -113,6 +120,7 @@ public class WatchActivity extends AppCompatActivity implements NotificationServ
         applyButtonClickListers();
 
         makeBluetoothConnection();
+        mAlertNotificationService.setContext(this);
     }
 
     @Override
@@ -375,6 +383,10 @@ public class WatchActivity extends AppCompatActivity implements NotificationServ
                 if(grantResults[0] == 0) {
                     sTelecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
                 }
+            }
+            boolean AudioPermission = grantResults[5] == PackageManager.PERMISSION_GRANTED;
+            if (AudioPermission) {
+                sAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             }
         }
     }

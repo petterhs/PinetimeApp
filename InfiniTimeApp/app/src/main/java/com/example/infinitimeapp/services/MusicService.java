@@ -20,11 +20,11 @@ public class MusicService extends BaseService {
 
     private MusicService() {
         super(Stream.of(new String[][]{
-                {EVENT, "c7e50002-00fc-48fe-8e23-433b3a1942d0"},
-                {STATUS, "c7e50003-00fc-48fe-8e23-433b3a1942d0"},
-                {TRACK, "c7e50005-00fc-48fe-8e23-433b3a1942d0"},
-                {ARTIST, "c7e50004-00fc-48fe-8e23-433b3a1942d0"},
-                {ALBUM, "c7e50006-00fc-48fe-8e23-433b3a1942d0"}
+                {EVENT, "00000001-00fc-48fe-8e23-433b3a1942d0"},
+                {STATUS, "00000002-00fc-48fe-8e23-433b3a1942d0"},
+                {ARTIST, "00000003-00fc-48fe-8e23-433b3a1942d0"},
+                {TRACK, "00000004-00fc-48fe-8e23-433b3a1942d0"},
+                {ALBUM, "00000005-00fc-48fe-8e23-433b3a1942d0"}
         }).collect(Collectors.toMap(p -> p[0], p -> p[1])));
     }
 
